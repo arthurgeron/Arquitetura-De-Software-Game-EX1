@@ -29,6 +29,7 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -38,7 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class Main {
-
+	static ArrayList<Entidade> entidades = new ArrayList<Entidade>();
 	int coletados;
 
 	public static void main(String[] args) throws IOException {
@@ -48,32 +49,27 @@ public class Main {
 
 		final Main main = new Main();
 
-		final int[][] posicoes = {
-				{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0},
-				{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0},
-				{3, 3, 3, 1, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3},
-				{3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3},
-				{3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3},
-				{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1},
-				{3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-				{3, 3, 3, 3, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 3},
-				{3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-				{3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		final String[][] posicoes = {
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
+				{"grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"},
 		};
 
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 15; j++) {
-				if (posicoes[i][j] == 0) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main.class.getResourceAsStream("/agua.png")))));
-				}
-				if (posicoes[i][j] == 1) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main.class.getResourceAsStream("/maca.png")))));
-				}
-				if (posicoes[i][j] == 2) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main.class.getResourceAsStream("/personagem.png")))));
-				}
-				if (posicoes[i][j] == 3) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main.class.getResourceAsStream("/grama.png")))));
+				for(Entidade entidade : entidades)
+				{
+					if(entidade.getNome().equals(posicoes[i][j]))
+					{
+						frame.add(new JLabel(entidade.getIcone()));
+					}
 				}
 			}
 		}
@@ -93,21 +89,21 @@ public class Main {
 				case 37:
 					for (int i = 0; i < 10; i++) {
 						for (int j = 0; j < 15; j++) {
-							if (posicoes[i][j] == 2) {
-								if (posicoes[i][j - 1] == 0) {
+							if (posicoes[i][j] == "personagem") {
+								if (posicoes[i][j - 1] == "agua") {
 									JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
 									System.exit(0);
 								}
-								if (posicoes[i][j - 1] == 1) {
+								if (posicoes[i][j - 1] == "maca") {
 									++main.coletados;
 									if (main.coletados == 3) {
 										JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
 										System.exit(0);
 									}
 								}
-								posicoes[i][j] = 3;
+								posicoes[i][j] = "grama";
 								((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
-								posicoes[i][j - 1] = 2;
+								posicoes[i][j - 1] = "personagem";
 								((JLabel) frame.getContentPane().getComponent(i * 15 + j - 1)).setIcon(icone(2));
 							}
 						}
@@ -116,21 +112,21 @@ public class Main {
 				case 38:
 					for (int i = 0; i < 10; i++) {
 						for (int j = 0; j < 15; j++) {
-							if (posicoes[i][j] == 2) {
-								if (posicoes[i - 1][j] == 0) {
+							if (posicoes[i][j] == "personagem") {
+								if (posicoes[i - 1][j] == "agua") {
 									JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
 									System.exit(0);
 								}
-								if (posicoes[i - 1][j] == 1) {
+								if (posicoes[i - 1][j] == "maca") {
 									++main.coletados;
 									if (main.coletados == 3) {
 										JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
 										System.exit(0);
 									}
 								}
-								posicoes[i][j] = 3;
+								posicoes[i][j] = "grama";
 								((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
-								posicoes[i - 1][j] = 2;
+								posicoes[i - 1][j] = "personagem";
 								((JLabel) frame.getContentPane().getComponent((i - 1) * 15 + j)).setIcon(icone(2));
 							}
 						}
@@ -139,21 +135,21 @@ public class Main {
 				case 39:
 					for (int i = 0; i < 10; i++) {
 						for (int j = 0; j < 15; j++) {
-							if (posicoes[i][j] == 2) {
-								if (posicoes[i][j + 1] == 0) {
+							if (posicoes[i][j] == "personagem") {
+								if (posicoes[i][j + 1] == "agua") {
 									JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
 									System.exit(0);
 								}
-								if (posicoes[i][j + 1] == 1) {
+								if (posicoes[i][j + 1] == "maca") {
 									++main.coletados;
 									if (main.coletados == 3) {
 										JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
 										System.exit(0);
 									}
 								}
-								posicoes[i][j] = 3;
+								posicoes[i][j] = "grama";
 								((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
-								posicoes[i][j + 1] = 2;
+								posicoes[i][j + 1] = "personagem";
 								((JLabel) frame.getContentPane().getComponent(i * 15 + j + 1)).setIcon(icone(2));
 								break;
 							}
