@@ -29,7 +29,7 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -40,43 +40,52 @@ import javax.swing.JOptionPane;
 public class Main2 {
 
 	int coletados;
-
+	static ArrayList<Entidade> entidades = new ArrayList<Entidade>();
+	
+	
+	//Declara o tabuleiro com a escolha do tamanho	
+	
+	
 	public static void main(String[] args) throws IOException {
+		Tabuleiro tabuleiro = new Tabuleiro(Integer.valueOf(JOptionPane.showInputDialog("Digite a largura do tabuleiro:")),Integer.valueOf(JOptionPane.showInputDialog("Digite a altura do tabuleiro: ")),entidades);
+		final int numeroDeMacas;
+		int numeroDeMacasTemp = 0;
+		
+		entidades.add(new Entidade("/agua.png","agua",false,8,9));
+		entidades.add(new Entidade("/agua.png","agua",false,11,10));
+		entidades.add(new Entidade("/agua.png","agua",false,12,10));
+		entidades.add(new Entidade("/maca.png","maca",false,8,8));
+		entidades.add(new Entidade("/personagem.png","personagem",true));
+		
+		
 		final JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(10, 15));
+		frame.setLayout(new GridLayout(tabuleiro.getTabuleiro().length, tabuleiro.getTabuleiro()[0].length));
 
 		final Main2 main = new Main2();
-
-		final int[][] posicoes = {
-				{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0},
-				{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0},
-				{3, 3, 3, 1, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3},
-				{3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3},
-				{3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3},
-				{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1},
-				{3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-				{3, 3, 3, 3, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 3},
-				{3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-				{3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		};
-
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 15; j++) {
-				if (posicoes[i][j] == 0) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main2.class.getResourceAsStream("/agua.png")))));
-				}
-				if (posicoes[i][j] == 1) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main2.class.getResourceAsStream("/maca.png")))));
-				}
-				if (posicoes[i][j] == 2) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main2.class.getResourceAsStream("/personagem.png")))));
-				}
-				if (posicoes[i][j] == 3) {
-					frame.add(new JLabel(new ImageIcon(ImageIO.read(Main2.class.getResourceAsStream("/grama.png")))));
-				}
+		final String[][] posicoes = tabuleiro.getTabuleiro();
+//		JOptionPane.showMessageDialog(frame, posicoes.length);
+//		JOptionPane.showMessageDialog(frame, posicoes[0].length);
+		for (int i = 0; i < posicoes.length - 1; i++) {
+			for (int j = 0; j < posicoes[0].length - 1; j++) {
+				for(Entidade entidadeArray : entidades)
+				{
+					if(entidadeArray.getPosicaoXNoMapa() == i && entidadeArray.getPosicaoYNoMapa() == j )
+					{
+						frame.add(new JLabel(entidadeArray.getIcone()));
+					}
+					else
+					{
+						frame.add(new JLabel(new Entidade("/grama.png","grama",false).getIcone()));
+					}
+					if(entidadeArray.getNome() == "maca")
+					{		
+						numeroDeMacasTemp++;	
+					}
+				}	
 			}
 		}
+		numeroDeMacas = numeroDeMacasTemp;
 
 		frame.addKeyListener(new KeyListener() {
 			@Override
@@ -91,71 +100,80 @@ public class Main2 {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case 37:
-					for (int i = 0; i < 10; i++) {
-						for (int j = 0; j < 15; j++) {
-							if (posicoes[i][j] == 2) {
-								if (posicoes[i][j - 1] == 0) {
-									JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
-									System.exit(0);
-								}
-								if (posicoes[i][j - 1] == 1) {
-									++main.coletados;
-									if (main.coletados == 3) {
-										JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
+					for (int i = 0; i < posicoes.length; i++) {
+						for (int j = 0; j < posicoes[0].length ; j++) {
+							if (posicoes[i][j].equals("personagem")) {
+								if(j-1 > 0)
+								{
+									if (posicoes[i][j - 1].equals("agua")) {
+										JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
 										System.exit(0);
 									}
+									if (posicoes[i][j - 1].equals("maca")) {
+										++main.coletados;
+										if (main.coletados == numeroDeMacas) {
+											JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
+											System.exit(0);
+										}
+									}
+									posicoes[i][j] = "grama";
+									((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
+									posicoes[i][j - 1] = "personagem";
+									((JLabel) frame.getContentPane().getComponent(i * 15 + j - 1)).setIcon(icone(2));
 								}
-								posicoes[i][j] = 3;
-								((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
-								posicoes[i][j - 1] = 2;
-								((JLabel) frame.getContentPane().getComponent(i * 15 + j - 1)).setIcon(icone(2));
 							}
 						}
 					}
 					break;
 				case 38:
-					for (int i = 0; i < 10; i++) {
-						for (int j = 0; j < 15; j++) {
-							if (posicoes[i][j] == 2) {
-								if (posicoes[i - 1][j] == 0) {
-									JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
-									System.exit(0);
-								}
-								if (posicoes[i - 1][j] == 1) {
-									++main.coletados;
-									if (main.coletados == 3) {
-										JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
+					for (int i = 0; i < posicoes.length; i++) {
+						for (int j = 0; j < posicoes[0].length; j++) {
+							if (posicoes[i][j].equals("personagem")) {
+								if(j-1 > 0)
+								{
+									if (posicoes[i - 1][j].equals("agua")) {
+										JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
 										System.exit(0);
 									}
+									if (posicoes[i - 1][j].equals("maca")) {
+										++main.coletados;
+										if (main.coletados == numeroDeMacas) {
+											JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
+											System.exit(0);
+										}
+									}
+									posicoes[i][j] = "grama";
+									((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
+									posicoes[i - 1][j] = "personagem";
+									((JLabel) frame.getContentPane().getComponent((i - 1) * 15 + j)).setIcon(icone(2));
 								}
-								posicoes[i][j] = 3;
-								((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
-								posicoes[i - 1][j] = 2;
-								((JLabel) frame.getContentPane().getComponent((i - 1) * 15 + j)).setIcon(icone(2));
 							}
 						}
 					}
 					break;
 				case 39:
-					for (int i = 0; i < 10; i++) {
-						for (int j = 0; j < 15; j++) {
-							if (posicoes[i][j] == 2) {
-								if (posicoes[i][j + 1] == 0) {
-									JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
-									System.exit(0);
-								}
-								if (posicoes[i][j + 1] == 1) {
-									++main.coletados;
-									if (main.coletados == 3) {
-										JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
+					for (int i = 0; i < posicoes.length; i++) {
+						for (int j = 0; j < posicoes[0].length; j++) {
+							if (posicoes[i][j].equals("personagem")) {
+								if(j+1 <= posicoes[0].length)
+								{
+									if (posicoes[i][j + 1].equals("agua")) {
+										JOptionPane.showMessageDialog(frame, "Perdeu!", "Perdeu!", JOptionPane.ERROR_MESSAGE);
 										System.exit(0);
 									}
+									if (posicoes[i][j + 1].equals("maca")) {
+										++main.coletados;
+										if (main.coletados == numeroDeMacas) {
+											JOptionPane.showMessageDialog(frame, "Ganhou!", "Ganhou!", JOptionPane.INFORMATION_MESSAGE);
+											System.exit(0);
+										}
+									}
+									posicoes[i][j] = "grama";
+									((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
+									posicoes[i][j + 1] = "personagem";
+									((JLabel) frame.getContentPane().getComponent(i * 15 + j + 1)).setIcon(icone(2));
+									break;
 								}
-								posicoes[i][j] = 3;
-								((JLabel) frame.getContentPane().getComponent(i * 15 + j)).setIcon(icone(3));
-								posicoes[i][j + 1] = 2;
-								((JLabel) frame.getContentPane().getComponent(i * 15 + j + 1)).setIcon(icone(2));
-								break;
 							}
 						}
 					}

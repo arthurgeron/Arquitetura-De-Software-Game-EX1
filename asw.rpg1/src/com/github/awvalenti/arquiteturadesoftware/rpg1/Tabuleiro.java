@@ -6,15 +6,15 @@ public class Tabuleiro {
 	private String[][] posicoes;
 	public Tabuleiro(int tamanhoX, int tamanhoY, ArrayList<Entidade> entidades)
 	{
-		posicoes = new String[tamanhoX][tamanhoY];
-		for(int i = 0; i< posicoes[tamanhoX].length - 1 ; i++)
+		posicoes = new String[tamanhoX][tamanhoY];//Tabuleiro
+		for(int i = 0; i< posicoes.length - 1 ; i++)//preenche as posições com grama por padrão
 		{
-			for(int j = 0; j < posicoes[tamanhoX][tamanhoY].length() - 1 ; j++ )
+			for(int j = 0; j < posicoes[tamanhoX-1].length - 1 ; j++ )
 			{
 				posicoes[i][j] = "grama";
 			}
 		}
-		for(Entidade entidade : entidades)
+		for(Entidade entidade : entidades) // Preenche o tabuleiro com as entidades
 		{
 			try
 			{

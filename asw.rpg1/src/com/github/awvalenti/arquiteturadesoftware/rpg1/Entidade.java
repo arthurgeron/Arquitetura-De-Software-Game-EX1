@@ -21,12 +21,34 @@ public class Entidade {
 		this.nome = nome;
 		this.ehJogador = ehJogador;
 	}
+	public Entidade(String localDoIcone, String nome, Boolean ehJogador,int posicaoX,int posicaoY)
+	{
+		try{
+			this.icone = new ImageIcon(ImageIO.read(Main.class.getResourceAsStream(localDoIcone)));
+		}
+		catch(Exception ex)
+		{
+			System.out.println(ex.toString());
+		}
+		this.nome = nome;
+		this.ehJogador = ehJogador;
+		this.posicaoXNoMapa = posicaoX;
+		this.posicaoYNoMapa = posicaoY;
+	}
 	
 	public Entidade(ImageIcon icone, String nome, Boolean ehJogador)
 	{
 		this.icone = icone;		
 		this.nome = nome;
 		this.ehJogador = ehJogador;
+	}
+	public Entidade(ImageIcon icone, String nome, Boolean ehJogador,int posicaoX,int posicaoY)
+	{
+		this.icone = icone;		
+		this.nome = nome;
+		this.ehJogador = ehJogador;
+		this.posicaoXNoMapa = posicaoX;
+		this.posicaoYNoMapa = posicaoY;
 	}
 	public ImageIcon getIcone()
 	{
