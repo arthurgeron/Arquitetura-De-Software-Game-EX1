@@ -7,9 +7,9 @@ public class Tabuleiro {
 	public Tabuleiro(int tamanhoX, int tamanhoY, ArrayList<Entidade> entidades)
 	{
 		posicoes = new String[tamanhoX][tamanhoY];//Tabuleiro
-		for(int i = 0; i< posicoes.length - 1 ; i++)//preenche as posições com grama por padrão
+		for(int i = 0; i< posicoes.length ; i++)//preenche as posições com grama por padrão
 		{
-			for(int j = 0; j < posicoes[tamanhoX-1].length - 1 ; j++ )
+			for(int j = 0; j < posicoes[tamanhoX-1].length ; j++ )
 			{
 				posicoes[i][j] = "grama";
 			}

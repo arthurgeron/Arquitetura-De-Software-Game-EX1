@@ -30,12 +30,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+//import com.github.awvalenti.arquiteturadesoftware.rpg1.versao1.procedimental.Main;
 
 public class Main2 {
 
@@ -51,11 +54,11 @@ public class Main2 {
 		final int numeroDeMacas;
 		int numeroDeMacasTemp = 0;
 		
-		entidades.add(new Entidade("/agua.png","agua",false,8,9));
-		entidades.add(new Entidade("/agua.png","agua",false,11,10));
-		entidades.add(new Entidade("/agua.png","agua",false,12,10));
-		entidades.add(new Entidade("/maca.png","maca",false,8,8));
-		entidades.add(new Entidade("/personagem.png","personagem",true));
+		entidades.add(new Entidade("/agua.png","agua",false,1,3));
+		entidades.add(new Entidade("/agua.png","agua",false,1,2));
+		entidades.add(new Entidade("/agua.png","agua",false,1,1));
+		entidades.add(new Entidade("/maca.png","maca",false,0,2));
+		entidades.add(new Entidade("/personagem.png","personagem",true, 0, 0));
 		
 		
 		final JFrame frame = new JFrame();
@@ -66,25 +69,19 @@ public class Main2 {
 		final String[][] posicoes = tabuleiro.getTabuleiro();
 //		JOptionPane.showMessageDialog(frame, posicoes.length);
 //		JOptionPane.showMessageDialog(frame, posicoes[0].length);
-		for (int i = 0; i < posicoes.length - 1; i++) {
-			for (int j = 0; j < posicoes[0].length - 1; j++) {
-				for(Entidade entidadeArray : entidades)
-				{
-					if(entidadeArray.getPosicaoXNoMapa() == i && entidadeArray.getPosicaoYNoMapa() == j )
-					{
-						frame.add(new JLabel(entidadeArray.getIcone()));
-					}
-					else
-					{
-						frame.add(new JLabel(new Entidade("/grama.png","grama",false).getIcone()));
-					}
-					if(entidadeArray.getNome() == "maca")
-					{		
-						numeroDeMacasTemp++;	
-					}
-				}	
+		for (int i = 0; i < posicoes.length; i++) {
+			for (int j = 0; j < posicoes[0].length; j++) {
+				frame.add(new JLabel(new Entidade("/grama.png","grama",false).getIcone()));
 			}
 		}
+		for(Entidade entidadeArray : entidades)
+		{
+			if(!entidadeArray.getNome().equals("grama"))
+			{
+				((JLabel) frame.getContentPane().getComponent( entidadeArray.getPosicaoXNoMapa() * frame.getContentPane().WIDTH + entidadeArray.getPosicaoYNoMapa())).setIcon(entidadeArray.getIcone());
+			}
+			
+		}	
 		numeroDeMacas = numeroDeMacasTemp;
 
 		frame.addKeyListener(new KeyListener() {
