@@ -117,7 +117,7 @@ public class TelaJogo implements SaidaJogo {
 		public void moverInimigo() {
 			if(tabuleiro.acharPosicaoDe(Elemento.INIMIGO)!= null) {
 				Direcao direcao;
-				direcao = acharCaminho(new Posicao(posicaoInimigo[0],posicaoInimigo[1]));
+				direcao = acharCaminho(null, new Posicao(posicaoInimigo[0],posicaoInimigo[1]));
 				if(direcao != null) {
 					tabuleiro.fazerMovimento(direcao, inimigo);
 					posicaoInimigo[0] = posicaoInimigo[0] + direcao.getIncrementoLinha();
@@ -125,62 +125,93 @@ public class TelaJogo implements SaidaJogo {
 				}
 			}
 		}
-		private Direcao acharCaminho(Posicao posicao) {
+		private Direcao acharCaminho(Direcao direcaoInicial, Posicao posicao) {
 			int diferencaDeLinhas, diferencaDeColunas;
 			diferencaDeLinhas = tabuleiro.acharPosicaoDe(Elemento.PERSONAGEM).getLinha() - posicao.getLinha();
 			diferencaDeColunas = tabuleiro.acharPosicaoDe(Elemento.PERSONAGEM).getColuna() - posicao.getColuna();
 			try {
-
-				//para baixo
-			if(Math.abs(diferencaDeLinhas) > Math.abs(diferencaDeColunas)) {	
-				if(diferencaDeLinhas>0) {
-					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.getLinha() + 1,posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(new Posicao(posicao.getLinha() + 1, posicao.getColuna()))) {
-						if(tabuleiro.elementoEm(new Posicao(posicao.getLinha() + 1,posicao.getColuna())).equals(Elemento.PERSONAGEM)) {
-							return Direcao.BAIXO;
-						}
-						else { 
-							return acharCaminho(new Posicao(posicao.getLinha() + 1, posicao.getColuna()));
-						}
-
+				if(tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).equals(Elemento.PERSONAGEM)) {
+					return direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
+				}
+				else if(tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).equals(Elemento.PERSONAGEM)) {
+					return direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
+				}
+				else if(tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).equals(Elemento.PERSONAGEM)) {
+					return direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
+				}
+				else if(tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).equals(Elemento.PERSONAGEM)) {
+					return direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
+				}
+				
+				if(
+					diferencaDeLinhas==0 
+					&&
+				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.DIREITA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
+				    && diferencaDeColunas>0	
+				    ) {
+					
+						return acharCaminho(direcaoInicial,posicao.somar(Direcao.DIREITA));
 					}
-				}
-				else {
-					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.getLinha() - 1,posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(new Posicao(posicao.getLinha() - 1, posicao.getColuna()))) {
-						if(tabuleiro.elementoEm(new Posicao(posicao.getLinha() - 1,posicao.getColuna())).equals(Elemento.PERSONAGEM)) {
-							return Direcao.CIMA;
-						}
-						else { 
-							return acharCaminho(new Posicao(posicao.getLinha() - 1, posicao.getColuna()));
-						}
-					} 
-				}
-			}
-			else {
-				if(diferencaDeColunas>0) {
-				//para esquerda
-					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.getLinha() ,posicao.getColuna() -1}) && !tabuleiro.posicaoEhInvalida(new Posicao(posicao.getLinha(), posicao.getColuna() -1))) {
-						if(tabuleiro.elementoEm(new Posicao(posicao.getLinha() ,posicao.getColuna() -1)).equals(Elemento.PERSONAGEM)) {
-							return Direcao.ESQUERDA;
-						}
-						else { 
-							return acharCaminho(new Posicao(posicao.getLinha(), posicao.getColuna() - 1));
-						}
+				else if(
+						diferencaDeLinhas==0 
+						&&
+					    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.ESQUERDA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
+					    && diferencaDeColunas<0	
+					    ) {
+						return acharCaminho(direcaoInicial,posicao.somar(Direcao.ESQUERDA));
 					}
-				}
-				//para direita
-				else {
-					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.getLinha(),posicao.getColuna() +1}) && !tabuleiro.posicaoEhInvalida(new Posicao(posicao.getLinha(), posicao.getColuna() +1))) {
-						if(tabuleiro.elementoEm(new Posicao(posicao.getLinha(),posicao.getColuna() +1)).equals(Elemento.PERSONAGEM)) {
-							return Direcao.DIREITA;
-						}
-						else { 
-							return acharCaminho(new Posicao(posicao.getLinha() , posicao.getColuna() + 1));
-						}
+				
+			
+				if(
+						diferencaDeColunas==0 
+						&&
+					    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.BAIXO).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
+					    && diferencaDeLinhas>0	
+					    ) {
+						return acharCaminho(direcaoInicial,posicao.somar(Direcao.BAIXO));
 					}
-				}
-				//para cima
-			}	
+					else if (
+							diferencaDeColunas==0 
+							&&
+						    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.CIMA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
+						    && diferencaDeLinhas<0	
+						    ) {
+						return acharCaminho(direcaoInicial,posicao.somar(Direcao.CIMA));
+					}
+			
+//			if(Math.abs(diferencaDeLinhas) > Math.abs(diferencaDeColunas)) {	
+//				if(diferencaDeLinhas>0) {
+//					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.BAIXO).getLinha(),posicao.somar(Direcao.BAIXO).getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) {
+//						return acharCaminho(direcaoInicial, posicao.somar(Direcao.BAIXO));
+//					
+//
+//				}
+//				else {
+//					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.CIMA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) {
+//						return acharCaminho(direcaoInicial, posicao.somar(Direcao.CIMA));
+//						
+//					} 
+//				}
+//			}
+//			else {
+//				if(diferencaDeColunas>0) {
+//				//para esquerda
+//					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.ESQUERDA).getLinha() ,posicao.somar(Direcao.ESQUERDA).getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) {
+//						return acharCaminho(direcaoInicial, posicao.somar(Direcao.ESQUERDA));
+//						
+//					}
+//				}
+//				//para direita
+//				else {
+//					if(!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.DIREITA).getLinha(),posicao.somar(Direcao.DIREITA).getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) {
+//						return acharCaminho(direcaoInicial, posicao.somar(Direcao.DIREITA));
+//						
+//					}
+//				}
+//				//para cima
+//			}	
 				return null;
+//			}
 			}
 			catch(Exception exception) {
 				System.out.println(exception);

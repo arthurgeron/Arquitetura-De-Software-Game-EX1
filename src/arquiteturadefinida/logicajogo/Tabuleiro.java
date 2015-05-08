@@ -28,7 +28,14 @@ public class Tabuleiro {
 	}
 
 	public Elemento elementoEm(Posicao posicao) {
-		return matriz[posicao.getLinha()][posicao.getColuna()];
+		try {
+			return matriz[posicao.getLinha()][posicao.getColuna()];
+		}
+		catch(Exception exception)
+		{
+			//System.out.println("Exception at elementoEm: "+ exception);
+			return Elemento.GRAMA;
+		}
 	}
 
 	public void fazerMovimento(Direcao d, Elemento entidade) {
