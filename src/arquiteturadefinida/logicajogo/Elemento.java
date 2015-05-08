@@ -3,11 +3,11 @@ package arquiteturadefinida.logicajogo;
 public enum Elemento {
 
 	AGUA("/agua.png", true),
-	MACA("/maca.png"),
+	MACA("/maca.png", true),
 	PERSONAGEM("/personagem.png"),
 	INIMIGO("/inimigo.png"),
 	GRAMA("/grama.png"),
-	PORTAL("/passagem.png"),
+	PORTAL("/passagem.png", true),
 	;
 
 	private final String caminhoImagem;

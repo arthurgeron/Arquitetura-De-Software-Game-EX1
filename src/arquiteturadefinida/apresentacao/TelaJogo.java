@@ -25,7 +25,7 @@ public class TelaJogo implements SaidaJogo {
 	public TelaJogo(Tabuleiro tabuleiro, FabricaIcones fabricaIcones) {
 		this.tabuleiro = tabuleiro;
 		this.fabricaIcones = fabricaIcones;
-		iA = new InteligenciaArtificial(tabuleiro);
+		iA = new InteligenciaArtificial(tabuleiro,Elemento.INIMIGO);
 		
 		frame = new JFrame();
 		frame.setLayout(new GridLayout(tabuleiro.getNumeroLinhas(), tabuleiro.getNumeroColunas()));
@@ -80,9 +80,10 @@ public class TelaJogo implements SaidaJogo {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
+			iA.moverInimigo();
 			Direcao direcao = Direcao.comCodigo(e.getKeyCode());
 			if (direcao != null) tabuleiro.fazerMovimento(direcao, Elemento.PERSONAGEM);
-			iA.moverInimigo();
+			//iA.moverInimigo();
 		}
 
 		@Override
