@@ -58,7 +58,7 @@ public class InteligenciaArtificial {
 			if(
 				diferencaDeLinhas==0 
 				&&
-			    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.DIREITA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
+			    (!tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
 			    && diferencaDeColunas>0	
 			    ) {
 					direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
@@ -67,7 +67,7 @@ public class InteligenciaArtificial {
 			else if(
 					diferencaDeLinhas==0 
 					&&
-				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.ESQUERDA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
+				    (!tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
 				    && diferencaDeColunas<0	
 				    ) {
 					direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
@@ -78,7 +78,7 @@ public class InteligenciaArtificial {
 			if(
 					diferencaDeColunas==0 
 					&&
-				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.BAIXO).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
+				    (!tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
 				    && diferencaDeLinhas>0	
 				    ) {
 					direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
@@ -87,7 +87,7 @@ public class InteligenciaArtificial {
 				else if (
 						diferencaDeColunas==0 
 						&&
-					    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.CIMA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
+					    (!tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
 					    && diferencaDeLinhas<0	
 					    ) {
 					direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
@@ -98,40 +98,62 @@ public class InteligenciaArtificial {
 			if(
 					Math.abs(diferencaDeLinhas)>=Math.abs(diferencaDeColunas)
 					&&
-				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.DIREITA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
+				    (!tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
 				    && diferencaDeColunas>0	
 				    ) {
-//					if(direcaoInicial == null){
-//						direcaoInicial = Direcao.DIREITA;
-//					}
 						direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
 						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
 					}
-			if(
+			else if(
 					Math.abs(diferencaDeLinhas)>=Math.abs(diferencaDeColunas)
 					&&
-				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.ESQUERDA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
+				    (!tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
 				    && diferencaDeColunas<0	
 				    ) {
 						direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
 						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
 					}
-			if(
+			else if(
 					Math.abs(diferencaDeLinhas)<Math.abs(diferencaDeColunas)
 					&&
-				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.CIMA).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
+				    (!tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
 				    && diferencaDeLinhas<0	
 				    ) {
 						direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
 						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
 					}
-			if(
+			else if(
 					Math.abs(diferencaDeLinhas)<Math.abs(diferencaDeColunas)
 					&&
-				    (!posicoesAndadasOuInvalidas.contains(new int[]{posicao.somar(Direcao.BAIXO).getLinha(),posicao.getColuna()}) && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
+				    (!tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
 				    && diferencaDeLinhas>0	
 				    ) {
 						direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
+						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
+					}
+			else  if
+				((!tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
+			    && diferencaDeLinhas>0	
+			    ) {
+					direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
+					return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
+			}
+		    else if ((!tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
+			    && diferencaDeLinhas<0	
+			    ) {
+					direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
+					return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
+				}
+		    else if((!tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
+				    && diferencaDeColunas<0	
+				    ) {
+						direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
+						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
+					}
+		    else if((!tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
+				    && diferencaDeColunas>0	
+				    ) {
+						direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
 						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
 					}
 		
