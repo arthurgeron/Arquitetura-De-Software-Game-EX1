@@ -44,31 +44,33 @@ public class Tabuleiro {
 
 		if (posicaoEhInvalida(posicaoNova)) return;
 		Elemento elementoAlcancado = elementoEm(posicaoNova);
-
-		alterarElemento(posicaoAntiga, Elemento.GRAMA);
-		alterarElemento(posicaoNova, entidade);
-
-		switch (elementoAlcancado) {
-		case AGUA:
-			saida.perderJogo();
-			break;
-
-		case MACA:
-			if (quantidadeMacasRestantes() == 0) reexibirPortal();
-			break;
-
-		case PORTAL:
-			saida.passarDeFase();
-			break;
-
-		case PERSONAGEM:
-			saida.perderJogo();
-			break;
-		case INIMIGO:
-			saida.perderJogo();
-			break;
-		default:
-			break;
+		//Esta verificação evitará que o inimigo ande sobre a água ou pegue maças
+		if(!(entidade.equals(Elemento.INIMIGO) && (elementoAlcancado.equals(Elemento.AGUA) || elementoAlcancado.equals(Elemento.MACA) || elementoAlcancado.equals(Elemento.PORTAL)))) {
+			alterarElemento(posicaoAntiga, Elemento.GRAMA);
+			alterarElemento(posicaoNova, entidade);
+			
+			switch (elementoAlcancado) {
+			case AGUA:
+				saida.perderJogo();
+				break;
+	
+			case MACA:
+				if (quantidadeMacasRestantes() == 0) reexibirPortal();
+				break;
+	
+			case PORTAL:
+				saida.passarDeFase();
+				break;
+	
+			case PERSONAGEM:
+				saida.perderJogo();
+				break;
+			case INIMIGO:
+				saida.perderJogo();
+				break;
+			default:
+				break;
+			}
 		}
 
 	}
