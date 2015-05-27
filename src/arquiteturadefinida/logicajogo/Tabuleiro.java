@@ -5,7 +5,7 @@ public class Tabuleiro {
 	private Elemento[][] matriz;
 	private SaidaJogo saida;
 	private Posicao posicaoDoPortalOculto;
-
+	private boolean jogadorAtingiuPortal = false;
 	public Tabuleiro(Elemento[][] matriz) {
 		this.matriz = matriz;
 	}
@@ -40,35 +40,64 @@ public class Tabuleiro {
 
 	public void fazerMovimento(Direcao d, Elemento entidade) {
 		Posicao posicaoAntiga = acharPosicaoDe(entidade);
-		Posicao posicaoNova = posicaoAntiga.somar(d);
-
+		Posicao posicaoNova;
+		try{
+			posicaoNova = posicaoAntiga.somar(d);
+		}
+		catch(Exception exception) {
+			posicaoNova = posicaoAntiga;
+		}
 		if (posicaoEhInvalida(posicaoNova)) return;
 		Elemento elementoAlcancado = elementoEm(posicaoNova);
 		//Esta verificação evitará que o inimigo ande sobre a água ou pegue maças
-		if(!(entidade.equals(Elemento.INIMIGO) && (elementoAlcancado.equals(Elemento.AGUA) || elementoAlcancado.equals(Elemento.MACA) || elementoAlcancado.equals(Elemento.PORTAL)))) {
+		if(!(entidade.ehInimigo() && (elementoAlcancado.equals(Elemento.AGUA) || elementoAlcancado.equals(Elemento.MACA) || elementoAlcancado.equals(Elemento.PORTAL)))) {
 			alterarElemento(posicaoAntiga, Elemento.GRAMA);
-			alterarElemento(posicaoNova, entidade);
-			
 			switch (elementoAlcancado) {
 			case AGUA:
-				saida.perderJogo();
+				if(quantidadeDeJogadoresRestantes() == 0){
+					alterarElemento(posicaoNova, entidade);
+					if(!jogadorAtingiuPortal){
+						saida.perderJogo();
+					}
+					else {
+						saida.passarDeFase();
+					}
+				}
 				break;
 	
 			case MACA:
+				alterarElemento(posicaoNova, entidade);
 				if (quantidadeMacasRestantes() == 0) reexibirPortal();
 				break;
 	
 			case PORTAL:
-				saida.passarDeFase();
-				break;
-	
-			case PERSONAGEM:
-				saida.perderJogo();
-				break;
-			case INIMIGO:
-				saida.perderJogo();
+				if(quantidadeDeJogadoresRestantes() == 0){
+					alterarElemento(posicaoNova, entidade);
+					saida.passarDeFase();
+				}
+				jogadorAtingiuPortal = true;
 				break;
 			default:
+				if(elementoAlcancado.ehInimigo() && !entidade.ehInimigo() && quantidadeDeJogadoresRestantes() == 0) {
+					if(!jogadorAtingiuPortal){
+						saida.perderJogo();
+					}
+					else {
+						saida.passarDeFase();
+					}
+				}
+				else if(elementoAlcancado.ehJogador() && entidade.ehInimigo() && quantidadeDeJogadoresRestantes() == 1){
+					if(!jogadorAtingiuPortal){
+						saida.perderJogo();
+					}
+					else {
+						saida.passarDeFase();
+					}
+					alterarElemento(posicaoNova, entidade);
+				}
+				else{
+					alterarElemento(posicaoNova, entidade);
+				}
 				break;
 			}
 		}
@@ -100,6 +129,18 @@ public class Tabuleiro {
 
 		return ret;
 	}
+	
+	private int quantidadeDeJogadoresRestantes() {
+		int ret = 0;
+
+		for (int i = 0; i < matriz.length; i++) {
+			for (int j = 0; j < matriz[i].length; j++) {
+				if (matriz[i][j].ehJogador()) ++ret;
+			}
+		}
+
+		return ret;
+	}
 
 	public Posicao acharPosicaoDe(Elemento elemento) {
 		for (int i = 0; i < matriz.length; i++) {
@@ -114,8 +155,13 @@ public class Tabuleiro {
 	}
 
 	public boolean posicaoEhInvalida(Posicao p) {
+		try {
 		return p.getLinha() < 0 || p.getLinha() >= getNumeroLinhas()
 				|| p.getColuna() < 0 || p.getColuna() >= getNumeroColunas();
+		}
+		catch(Exception exception) {
+			return false;
+		}
 	}
 
 }
