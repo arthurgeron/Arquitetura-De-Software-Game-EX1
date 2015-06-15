@@ -19,17 +19,25 @@ public class InteligenciaArtificial {
 	
 	
 		private boolean existeObstaculoNaDirecao(Direcao direcao, Posicao posicaoAtual, int limiteDePassos) {
-		
-			if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)) && limiteDePassos  > 0) {
-				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()) {
-					return true;
+		try{
+			if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
+			{
+				if(limiteDePassos  >= 0){
+					if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()) {
+						return true;
+					}
+					else {
+						return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassos--));
+					}
 				}
-				else {
-					return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassos--));
-				}
-				
-			}
+			}//É necessário verificar se a próxima posição realmente não é um obstáculo
+			else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo())
+				return true;
 			return false;
+		}
+		catch (Exception exception){
+			return true;
+		}
 		}
 	
 	private boolean existeAlvoNaDirecao(Direcao direcao, Posicao posicaoAtual, Elemento alvo) {
