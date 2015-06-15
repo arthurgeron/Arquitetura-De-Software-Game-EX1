@@ -1,6 +1,6 @@
 package arquiteturadefinida.logicajogo;
 
-import java.util.ArrayList;
+
 import java.util.Random;
 
 public class InteligenciaArtificial {
@@ -17,32 +17,106 @@ public class InteligenciaArtificial {
 
 	}
 	
-	public boolean existeObstaculoNaDirecao(Direcao direcao, Posicao posicao) {
+	
+		private boolean existeObstaculoNaDirecao(Direcao direcao, Posicao posicaoAtual, int limiteDePassos) {
 		
-		if(tabuleiro.posicaoEhInvalida(posicao.somar(direcao))) {
-			if(tabuleiro.elementoEm(posicao.somar(direcao)).getEhObstaculo()) {
-				return true;
+			if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)) && limiteDePassos  > 0) {
+				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()) {
+					return true;
+				}
+				else {
+					return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassos--));
+				}
+				
 			}
-			else {
-				return (existeObstaculoNaDirecao(direcao,posicao.somar(direcao)));
-			}
-			
-		}
-		else {
 			return false;
 		}
+		
+	
+	private boolean existePersonagemNaDirecao(Direcao direcao, Posicao posicaoAtual) {
+			
+			if(tabuleiro.posicaoEhInvalida(posicaoAtual)) {
+				return false;
+			}
+			if(!tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao))) {
+				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehJogador()) {
+					return true;
+				}
+				else if(!tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()){
+					return existePersonagemNaDirecao(direcao,posicaoAtual.somar(direcao));
+				}
+				
+			}
+			return false;
 	}
+	private boolean existeAlvoNaDirecao(Direcao direcao, Posicao posicaoAtual, Elemento alvo) {
+		
+		if(!posicaoNaDirecaoEhValida(posicaoAtual,direcao)) {
+			return false;
+		}
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()){
+			return false;
+		}
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).equals(alvo)) {
+			return true;
+		}
+		else if(!tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()){
+			return existeAlvoNaDirecao(direcao,posicaoAtual.somar(direcao),alvo);
+		}
+		return false;
+}
 	
-	
+	public Direcao escolherDirecaoAleatoria(Posicao posicao) {
+		Random randomico = new Random();
+		Direcao direcaoEscolhida = null;
+		int contadorDePassos = 0;
+		while(contadorDePassos<5) {
+			switch(randomico.nextInt(4)+1) {
+				case 1:
+					direcaoEscolhida = Direcao.ESQUERDA;
+					break;
+					
+				case 2:
+					direcaoEscolhida = Direcao.DIREITA;
+					break;
+					
+				case 3:
+					direcaoEscolhida = Direcao.CIMA;
+					break;
+					
+				case 4:
+					direcaoEscolhida = Direcao.BAIXO;
+					break;
+			
+			}
+			if( posicaoNaDirecaoEhValida(posicao,direcaoEscolhida)){
+				contadorDePassos++;
+			}
+			else {
+				break;
+			}
+		}
+		return direcaoEscolhida;
+		
+	}
 	public void moverInimigo() {
 		if(tabuleiro.acharPosicaoDe(inimigo)!= null) {
 			Direcao direcao;
-			direcao = acharCaminho(null, tabuleiro.acharPosicaoDe(inimigo));
+			direcao = acharCaminho(tabuleiro.acharPosicaoDe(inimigo));
 			if(direcao != null) {
 				tabuleiro.fazerMovimento(direcao, inimigo);
 			}
 
 		}
+	}
+	
+	private boolean posicaoNaDirecaoEhValida(Posicao posicao, Direcao direcao) {
+		if(!tabuleiro.posicaoEhInvalida(posicao) && !tabuleiro.posicaoEhInvalida(posicao.somar(direcao))){
+			if(!tabuleiro.elementoEm(posicao.somar(direcao)).getEhObstaculo()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public Elemento acharJogadorMaisProximo(Posicao posicao) {
@@ -95,7 +169,7 @@ public class InteligenciaArtificial {
 		
 	}
 	
-	private Direcao acharCaminho(Direcao direcaoInicial, Posicao posicao) {
+	private Direcao acharCaminho(Posicao posicao) {
 		int diferencaDeLinhas, diferencaDeColunas;
 		Elemento alvo = acharJogadorMaisProximo(posicao);
 		try {
@@ -106,131 +180,73 @@ public class InteligenciaArtificial {
 			catch(Exception exception){
 				diferencaDeLinhas = diferencaDeColunas = 0;
 			}
-			if(tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).equals(alvo)) {
-				direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
-				return direcaoInicial;
+			if(existeAlvoNaDirecao(Direcao.BAIXO,posicao,alvo)) {
+				return Direcao.BAIXO;
 			}
-			else if(tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).ehJogador()) {
-				direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
-				return direcaoInicial;
+			else if(existeAlvoNaDirecao(Direcao.CIMA,posicao,alvo)) {
+				return Direcao.CIMA;
 			}
-			else if(tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).ehJogador()) {
-				direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
-				return direcaoInicial;
+			else if(existeAlvoNaDirecao(Direcao.DIREITA,posicao,alvo)) {
+				return Direcao.DIREITA;
 			}
-			else if(tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).ehJogador()) {
-				direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
-				return direcaoInicial;
+			else if(existeAlvoNaDirecao(Direcao.ESQUERDA,posicao,alvo)) {
+				return Direcao.ESQUERDA;
 			}
-			
-			if(
-				diferencaDeLinhas==0 
-				&&
-			    (!tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
-			    && diferencaDeColunas>0	 && !existeObstaculoNaDirecao(Direcao.DIREITA,tabuleiro.acharPosicaoDe(inimigo))
-			    ) {
-					direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
-					return acharCaminho(direcaoInicial, posicao.somar(direcaoInicial));
-				}
-			else if(
-					diferencaDeLinhas==0 
-					&&
-				    (!tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
-				    && diferencaDeColunas<0	 && !existeObstaculoNaDirecao(Direcao.ESQUERDA,tabuleiro.acharPosicaoDe(inimigo))
-				    ) {
-					direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
-					return acharCaminho(direcaoInicial, posicao.somar(direcaoInicial));
-				}
-			
-		
-			if(
-					diferencaDeColunas==0 
-					&&
-				    (!tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
-				    && diferencaDeLinhas>0	&& !existeObstaculoNaDirecao(Direcao.BAIXO,tabuleiro.acharPosicaoDe(inimigo))
-				    ) {
-					direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
-					return acharCaminho(direcaoInicial, posicao.somar(direcaoInicial));
-				}
-				else if (
-						diferencaDeColunas==0 
-						&&
-					    (!tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
-					    && diferencaDeLinhas<0	&& !existeObstaculoNaDirecao(Direcao.CIMA,tabuleiro.acharPosicaoDe(inimigo))
-					    ) {
-					direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
-					return acharCaminho(direcaoInicial, posicao.somar(direcaoInicial));
-				}
-		
-		//Caso o personagem não esteja na mesma linha que o inimigo ele tentará calcular a melhor rota
-			if(
-					Math.abs(diferencaDeLinhas)>Math.abs(diferencaDeColunas)
-					&&
-				    (!tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
-				    && diferencaDeColunas>0	
-				    ) {
-						direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
-						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-					}
-			else if(
-					Math.abs(diferencaDeLinhas)>Math.abs(diferencaDeColunas)
-					&&
-				    (!tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
-				    && diferencaDeColunas<0	
-				    ) {
-						direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
-						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-					}
-			else if(
-					Math.abs(diferencaDeLinhas)<Math.abs(diferencaDeColunas)
-					&&
-				    (!tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
-				    && diferencaDeLinhas<0	
-				    ) {
-						direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
-						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-					}
-			else if(
-					Math.abs(diferencaDeLinhas)<Math.abs(diferencaDeColunas)
-					&&
-				    (!tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
-				    && diferencaDeLinhas>0	
-				    ) {
-						direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
-						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-					}
-			else  if
-				((!tabuleiro.elementoEm(posicao.somar(Direcao.BAIXO)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.BAIXO))) 
-			    && diferencaDeLinhas>0	
-			    ) {
-					direcaoInicial = direcaoInicial == null ? Direcao.BAIXO : direcaoInicial;
-					return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-			}
-		    else if ((!tabuleiro.elementoEm(posicao.somar(Direcao.CIMA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.CIMA))) 
-			    && diferencaDeLinhas<0	
-			    ) {
-					direcaoInicial = direcaoInicial == null ? Direcao.CIMA : direcaoInicial;
-					return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-				}
-		    else if((!tabuleiro.elementoEm(posicao.somar(Direcao.ESQUERDA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.ESQUERDA))) 
-				    && diferencaDeColunas<0	
-				    ) {
-						direcaoInicial = direcaoInicial == null ? Direcao.ESQUERDA : direcaoInicial;
-						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-					}
-		    else if((!tabuleiro.elementoEm(posicao.somar(Direcao.DIREITA)).getEhObstaculo() && !tabuleiro.posicaoEhInvalida(posicao.somar(Direcao.DIREITA))) 
-				    && diferencaDeColunas>0	
-				    ) {
-						direcaoInicial = direcaoInicial == null ? Direcao.DIREITA : direcaoInicial;
-						return acharCaminho(direcaoInicial,posicao.somar(direcaoInicial));
-					}
 		
 			
+			
+			
+			//Caso o personagem não esteja na mesma linha ou existam obstáculos 
+			
+			
+			if(Math.abs(diferencaDeLinhas)>Math.abs(diferencaDeColunas)) {
+				if(diferencaDeLinhas>0) {
+					if(!existeObstaculoNaDirecao(Direcao.BAIXO,posicao,diferencaDeLinhas)) {
+							return Direcao.BAIXO;
+					}
+				}
+				else if(!existeObstaculoNaDirecao(Direcao.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
+					return Direcao.CIMA;
+				}
+				
+				if(diferencaDeColunas>0) {
+					if(!existeObstaculoNaDirecao(Direcao.DIREITA,posicao,diferencaDeColunas)){
+							return Direcao.DIREITA;
+					}
+				}
+				else if(!existeObstaculoNaDirecao(Direcao.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
+							return Direcao.ESQUERDA;
+				}
+				
+				
+			}
+			else {
+				if(diferencaDeColunas>0) {
+					if(!existeObstaculoNaDirecao(Direcao.DIREITA,posicao,diferencaDeColunas)) {
+							return Direcao.DIREITA;
+					}
+				}
+				else if(!existeObstaculoNaDirecao(Direcao.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
+					return Direcao.ESQUERDA;
+				}
+				
+				if(diferencaDeLinhas>0) {
+					if(!existeObstaculoNaDirecao(Direcao.BAIXO,posicao,diferencaDeLinhas)){
+							return Direcao.BAIXO;
+					}
+				}
+				else if(!existeObstaculoNaDirecao(Direcao.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
+							return Direcao.CIMA;
+				}
+			}
+			
+
 		
-		return direcaoInicial;
+			return escolherDirecaoAleatoria(posicao);
 		}
 		catch(Exception exception) {
-			return direcaoInicial;
+			System.out.println("1:"+exception.getStackTrace()[0].getLineNumber()+"\n2:"+exception.getStackTrace()[1].getLineNumber()+"\n3:"+exception.getStackTrace()[2].getLineNumber()+"\n4:"+exception.getStackTrace()[3].getLineNumber());
+			return escolherDirecaoAleatoria(posicao);
 		}
 	}
 }

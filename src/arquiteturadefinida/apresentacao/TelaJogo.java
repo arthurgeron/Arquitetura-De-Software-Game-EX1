@@ -156,7 +156,7 @@ public class TelaJogo implements SaidaJogo {
 				iATasks = new ScheduledTasks();
 				iATimer.schedule(iATasks, 0 , 150);
 			}
-			//iA.moverInimigo();
+			//moverInimigos();
 		}
 
 		@Override

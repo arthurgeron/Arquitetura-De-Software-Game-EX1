@@ -50,7 +50,7 @@ public class Tabuleiro {
 		if (posicaoEhInvalida(posicaoNova)) return;
 		Elemento elementoAlcancado = elementoEm(posicaoNova);
 		//Esta verificação evitará que o inimigo ande sobre a água ou pegue maças
-		if(!(entidade.ehInimigo() && (elementoAlcancado.equals(Elemento.AGUA) || elementoAlcancado.equals(Elemento.MACA) || elementoAlcancado.equals(Elemento.PORTAL)))) {
+		if(!(entidade.ehInimigo() && (elementoAlcancado.equals(Elemento.AGUA) || elementoAlcancado.equals(Elemento.MACA) || elementoAlcancado.equals(Elemento.PORTAL) || elementoAlcancado.ehInimigo()))) {
 			alterarElemento(posicaoAntiga, Elemento.GRAMA);
 			switch (elementoAlcancado) {
 			case AGUA:
@@ -85,6 +85,7 @@ public class Tabuleiro {
 					else {
 						saida.passarDeFase();
 					}
+					break;
 				}
 				else if(elementoAlcancado.ehJogador() && entidade.ehInimigo() && quantidadeDeJogadoresRestantes() == 1){
 					if(!jogadorAtingiuPortal){
@@ -93,11 +94,8 @@ public class Tabuleiro {
 					else {
 						saida.passarDeFase();
 					}
-					alterarElemento(posicaoNova, entidade);
 				}
-				else{
-					alterarElemento(posicaoNova, entidade);
-				}
+				alterarElemento(posicaoNova, entidade);
 				break;
 			}
 		}
@@ -155,13 +153,8 @@ public class Tabuleiro {
 	}
 
 	public boolean posicaoEhInvalida(Posicao p) {
-		try {
 		return p.getLinha() < 0 || p.getLinha() >= getNumeroLinhas()
 				|| p.getColuna() < 0 || p.getColuna() >= getNumeroColunas();
-		}
-		catch(Exception exception) {
-			return false;
-		}
 	}
 
 }
