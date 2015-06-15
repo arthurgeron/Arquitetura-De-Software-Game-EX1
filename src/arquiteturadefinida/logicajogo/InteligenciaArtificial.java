@@ -31,24 +31,7 @@ public class InteligenciaArtificial {
 			}
 			return false;
 		}
-		
 	
-	private boolean existePersonagemNaDirecao(Direcao direcao, Posicao posicaoAtual) {
-			
-			if(tabuleiro.posicaoEhInvalida(posicaoAtual)) {
-				return false;
-			}
-			if(!tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao))) {
-				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehJogador()) {
-					return true;
-				}
-				else if(!tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()){
-					return existePersonagemNaDirecao(direcao,posicaoAtual.somar(direcao));
-				}
-				
-			}
-			return false;
-	}
 	private boolean existeAlvoNaDirecao(Direcao direcao, Posicao posicaoAtual, Elemento alvo) {
 		
 		if(!posicaoNaDirecaoEhValida(posicaoAtual,direcao)) {
@@ -194,9 +177,6 @@ public class InteligenciaArtificial {
 			}
 		
 			
-			
-			
-			//Caso o personagem não esteja na mesma linha ou existam obstáculos 
 			
 			
 			if(Math.abs(diferencaDeLinhas)>Math.abs(diferencaDeColunas)) {
