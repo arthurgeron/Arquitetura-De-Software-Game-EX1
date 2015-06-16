@@ -2,16 +2,16 @@ package arquiteturadefinida.logicajogo;
 
 public enum Elemento {
 
-	AGUA("/agua.png", true),
-	MACA("/maca.png", true),
+	AGUA("/agua.png", true, false, false),
+	MACA("/maca.png", true, false, false),
 	PERSONAGEM("/personagem.png",false,false,true),
 	PERSONAGEM2("/personagem.png",false,false,true),
-	INIMIGO("/inimigo.png",true,true),
-	INIMIGO2("/inimigo.png",true,true),
-	INIMIGO3("/inimigo.png",true,true),
-	INIMIGO4("/inimigo.png",true,true),
+	INIMIGO("/inimigo.png",true,true,false),
+	INIMIGO2("/inimigo.png",true,true,false),
+	INIMIGO3("/inimigo.png",true,true,false),
+	INIMIGO4("/inimigo.png",true,true,false),
 	GRAMA("/grama.png"),
-	PORTAL("/passagem.png", true)
+	PORTAL("/passagem.png", true, false, false)
 	;
 
 	private final String caminhoImagem;
@@ -21,17 +21,6 @@ public enum Elemento {
 		this.caminhoImagem = caminhoImagem;
 		obstaculo = false;
 		inimigo = false;
-		jogador = false;
-	}
-	Elemento(String caminhoImagem, boolean obstaculo) {
-		this.caminhoImagem = caminhoImagem;
-		this.obstaculo = obstaculo;
-		jogador = false;
-	}
-	Elemento(String caminhoImagem, boolean obstaculo, boolean inimigo) {
-		this.caminhoImagem = caminhoImagem;
-		this.inimigo = inimigo;
-		this.obstaculo = obstaculo;
 		jogador = false;
 	}
 	
@@ -54,7 +43,7 @@ public enum Elemento {
 		return caminhoImagem;
 	}
 	
-	public boolean getEhObstaculo() {
+	public boolean ehObstaculo() {
 		return obstaculo;
 	}
 	

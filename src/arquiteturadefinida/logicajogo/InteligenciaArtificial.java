@@ -23,7 +23,7 @@ public class InteligenciaArtificial {
 			if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
 			{
 				if(limiteDePassos  >= 0){
-					if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()) {
+					if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()) {
 						return true;
 					}
 					else {
@@ -31,7 +31,7 @@ public class InteligenciaArtificial {
 					}
 				}
 			}//É necessário verificar se a próxima posição realmente não é um obstáculo
-			else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo())
+			else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo())
 				return true;
 			return false;
 		}
@@ -45,19 +45,19 @@ public class InteligenciaArtificial {
 		if(!posicaoNaDirecaoEhValida(posicaoAtual,direcao)) {
 			return false;
 		}
-		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()){
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
 			return false;
 		}
 		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).equals(alvo)) {
 			return true;
 		}
-		else if(!tabuleiro.elementoEm(posicaoAtual.somar(direcao)).getEhObstaculo()){
+		else if(!tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
 			return existeAlvoNaDirecao(direcao,posicaoAtual.somar(direcao),alvo);
 		}
 		return false;
 }
 	
-	public Direcao escolherDirecaoAleatoria(Posicao posicao) {
+	private Direcao escolherDirecaoAleatoria(Posicao posicao) {
 		Random randomico = new Random();
 		Direcao direcaoEscolhida = null;
 		int contadorDePassos = 0;
@@ -103,14 +103,14 @@ public class InteligenciaArtificial {
 	
 	private boolean posicaoNaDirecaoEhValida(Posicao posicao, Direcao direcao) {
 		if(!tabuleiro.posicaoEhInvalida(posicao) && !tabuleiro.posicaoEhInvalida(posicao.somar(direcao))){
-			if(!tabuleiro.elementoEm(posicao.somar(direcao)).getEhObstaculo()) {
+			if(!tabuleiro.elementoEm(posicao.somar(direcao)).ehObstaculo()) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public Elemento acharJogadorMaisProximo(Posicao posicao) {
+	private Elemento acharJogadorMaisProximo(Posicao posicao) {
 		Elemento jogador1 = null,jogador2 = null;
 		
 		try{
@@ -204,9 +204,7 @@ public class InteligenciaArtificial {
 				}
 				else if(!existeObstaculoNaDirecao(Direcao.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
 							return Direcao.ESQUERDA;
-				}
-				
-				
+				}				
 			}
 			else {
 				if(diferencaDeColunas>0) {

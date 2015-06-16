@@ -29,12 +29,11 @@ public class Tabuleiro {
 
 	public Elemento elementoEm(Posicao posicao) {
 		try {
-			return matriz[posicao.getLinha()][posicao.getColuna()];
+			return posicao.getLinha()  + 1 <= matriz[0].length && posicao.getColuna() + 1 <= matriz.length ? matriz[posicao.getLinha()][posicao.getColuna()] : null;
 		}
 		catch(Exception exception)
 		{
-			//System.out.println("Exception at elementoEm: "+ exception);
-			return Elemento.GRAMA;
+			return null;
 		}
 	}
 
@@ -49,8 +48,7 @@ public class Tabuleiro {
 		}
 		if (posicaoEhInvalida(posicaoNova)) return;
 		Elemento elementoAlcancado = elementoEm(posicaoNova);
-		//Esta verificação evitará que o inimigo ande sobre a água ou pegue maças
-		if(!(entidade.ehInimigo() && (elementoAlcancado.equals(Elemento.AGUA) || elementoAlcancado.equals(Elemento.MACA) || elementoAlcancado.equals(Elemento.PORTAL) || elementoAlcancado.ehInimigo()))) {
+		if(!(entidade.ehInimigo() && (elementoAlcancado.ehObstaculo()))) {
 			alterarElemento(posicaoAntiga, Elemento.GRAMA);
 			switch (elementoAlcancado) {
 			case AGUA:
