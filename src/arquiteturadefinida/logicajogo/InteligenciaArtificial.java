@@ -2,7 +2,6 @@ package arquiteturadefinida.logicajogo;
 
 
 import java.util.Random;
-
 public class InteligenciaArtificial {
 	
 	Elemento inimigo;
@@ -18,65 +17,62 @@ public class InteligenciaArtificial {
 	}
 	
 	
-		private boolean existeObstaculoNaDirecao(Direcao direcao, Posicao posicaoAtual, int limiteDePassos) {
-		try{
-			if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
-			{
-				if(limiteDePassos  >= 0){
-					if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()) {
-						return true;
-					}
-					else {
-						return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassos--));
-					}
+		private boolean existeObstaculoNaDirecao(Direcao_Inimigo direcao, Posicao posicaoAtual, int limiteDePassos) {
+
+		if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
+		{
+			if(limiteDePassos  >= 0){
+				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)) instanceof ElementoEstatico) {
+					return true;
 				}
-			}//É necessário verificar se a próxima posição realmente não é um obstáculo
-			else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo())
-				return true;
-			return false;
-		}
-		catch (Exception exception){
+				else {
+					return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassos--));
+				}
+			}
+		}//É necessário verificar se a próxima posição realmente não é um obstáculo
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao))instanceof ElementoEstatico)
 			return true;
-		}
+		return false;
+		
 		}
 	
-	private boolean existeAlvoNaDirecao(Direcao direcao, Posicao posicaoAtual, Elemento alvo) {
+	private boolean existeAlvoNaDirecao(Direcao_Inimigo direcao, Posicao posicaoAtual, Elemento alvo) {
 		
 		if(!posicaoNaDirecaoEhValida(posicaoAtual,direcao)) {
 			return false;
 		}
-		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao))instanceof ElementoEstatico){
 			return false;
 		}
 		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).equals(alvo)) {
 			return true;
 		}
-		else if(!tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
+		else if(!(tabuleiro.elementoEm(posicaoAtual.somar(direcao))instanceof ElementoEstatico)){
 			return existeAlvoNaDirecao(direcao,posicaoAtual.somar(direcao),alvo);
 		}
 		return false;
 }
 	
-	private Direcao escolherDirecaoAleatoria(Posicao posicao) {
+	private Direcao_Inimigo escolherDirecaoAleatoria(Posicao posicao) {
 		Random randomico = new Random();
-		Direcao direcaoEscolhida = null;
+		Direcao_Inimigo direcaoEscolhida = null;
 		int contadorDePassos = 0;
 		while(contadorDePassos<5) {
 			switch(randomico.nextInt(4)+1) {
 				case 1:
-					direcaoEscolhida = Direcao.ESQUERDA;
+					direcaoEscolhida = Direcao_Inimigo.ESQUERDA;
 					break;
 					
 				case 2:
-					direcaoEscolhida = Direcao.DIREITA;
+					direcaoEscolhida = Direcao_Inimigo.DIREITA;
 					break;
 					
 				case 3:
-					direcaoEscolhida = Direcao.CIMA;
+					direcaoEscolhida = Direcao_Inimigo.CIMA;
 					break;
 					
 				case 4:
-					direcaoEscolhida = Direcao.BAIXO;
+					direcaoEscolhida = Direcao_Inimigo.BAIXO;
 					break;
 			
 			}
@@ -92,18 +88,18 @@ public class InteligenciaArtificial {
 	}
 	public void moverInimigo() {
 		if(tabuleiro.acharPosicaoDe(inimigo)!= null) {
-			Direcao direcao;
+			Direcao_Inimigo direcao;
 			direcao = acharCaminho(tabuleiro.acharPosicaoDe(inimigo));
 			if(direcao != null) {
-				tabuleiro.fazerMovimento(direcao, inimigo);
+				tabuleiro.fazerMovimentoInimigo(direcao, inimigo);
 			}
 
 		}
 	}
 	
-	private boolean posicaoNaDirecaoEhValida(Posicao posicao, Direcao direcao) {
+	private boolean posicaoNaDirecaoEhValida(Posicao posicao, Direcao_Inimigo direcao) {
 		if(!tabuleiro.posicaoEhInvalida(posicao) && !tabuleiro.posicaoEhInvalida(posicao.somar(direcao))){
-			if(!tabuleiro.elementoEm(posicao.somar(direcao)).ehObstaculo()) {
+			if(!(tabuleiro.elementoEm(posicao.somar(direcao))instanceof ElementoEstatico)) {
 				return true;
 			}
 		}
@@ -111,56 +107,40 @@ public class InteligenciaArtificial {
 	}
 	
 	private Elemento acharJogadorMaisProximo(Posicao posicao) {
-		Elemento jogador1 = null,jogador2 = null;
-		
-		try{
-			
-			for(int i =0; i < tabuleiro.getNumeroColunas() ; i++) {
-				for(int j = 0; j < tabuleiro.getNumeroLinhas() ; j++) {
-					if(tabuleiro.elementoEm(new Posicao(i,j)).ehJogador()) {
-						if(jogador1==null) {
-							jogador1 = tabuleiro.elementoEm(new Posicao(i,j));
-						}
-						else {
-							jogador2 = tabuleiro.elementoEm(new Posicao(i,j));
-							i = tabuleiro.getNumeroColunas();
-							break;
-						}
-						
+		 Elemento alvo = null;
+		 int diferencaDeColunas = 0 , diferencaDeLinhas = 0;
+	 
+		for(int i =0; i < tabuleiro.getNumeroColunas() ; i++) {
+			for(int j = 0; j < tabuleiro.getNumeroLinhas() ; j++) {
+				if(tabuleiro.elementoEm(new Posicao(i,j)) instanceof Personagem) {
+					if(alvo==null) {
+						alvo = tabuleiro.elementoEm(new Posicao(i,j));
+						diferencaDeLinhas = Math.abs(tabuleiro.acharPosicaoDe(alvo).getLinha() - posicao.getLinha());
+						diferencaDeColunas = Math.abs(tabuleiro.acharPosicaoDe(alvo).getColuna() - posicao.getColuna());
 					}
+					else {
+						int diferencaDeColunasNovoAlvo, diferencaDeLinhasNovoAlvo;
+						diferencaDeLinhasNovoAlvo = Math.abs(tabuleiro.acharPosicaoDe(alvo).getLinha() - posicao.getLinha());
+						diferencaDeColunasNovoAlvo = Math.abs(tabuleiro.acharPosicaoDe(alvo).getColuna() - posicao.getColuna());
+						
+						if((diferencaDeLinhasNovoAlvo + diferencaDeColunasNovoAlvo) > (diferencaDeLinhas + diferencaDeColunas)){
+							alvo = tabuleiro.elementoEm(new Posicao(i,j));
+							diferencaDeLinhas = diferencaDeLinhasNovoAlvo;
+							diferencaDeColunas = diferencaDeColunasNovoAlvo;
+						}
+					
+					}
+					
 				}
-				
-			}
-			
-			if( ( Math.abs(tabuleiro.acharPosicaoDe(jogador1).getColuna() - posicao.getColuna()) + Math.abs(tabuleiro.acharPosicaoDe(jogador1).getLinha() - posicao.getLinha()) )  >  ( Math.abs(tabuleiro.acharPosicaoDe(jogador2).getColuna() - posicao.getColuna()) + Math.abs(tabuleiro.acharPosicaoDe(jogador2).getLinha() - posicao.getLinha()) )     ) {
-				return jogador2;
-			}
-			else if( ( Math.abs(tabuleiro.acharPosicaoDe(jogador1).getColuna() - posicao.getColuna()) + Math.abs(tabuleiro.acharPosicaoDe(jogador1).getLinha() - posicao.getLinha()) )  <  ( Math.abs(tabuleiro.acharPosicaoDe(jogador2).getColuna() - posicao.getColuna()) + Math.abs(tabuleiro.acharPosicaoDe(jogador2).getLinha() - posicao.getLinha()) )     ) {
-				return jogador1;
-			}
-			else
-			{
-				if((new Random().nextInt() * 3 ) == 1 ) {
-					return jogador1;
-				}
-				else {
-					return jogador2;
-				}
-			}
-		}
-		catch(Exception exception){
-			if(tabuleiro.acharPosicaoDe(Elemento.PERSONAGEM)== null){
-				return Elemento.PERSONAGEM2;
-			}
-			else {
-				return Elemento.PERSONAGEM;
 			}
 			
 		}
+		
+		return alvo;
 		
 	}
 	
-	private Direcao acharCaminho(Posicao posicao) {
+	private Direcao_Inimigo acharCaminho(Posicao posicao) {
 		int diferencaDeLinhas, diferencaDeColunas;
 		Elemento alvo = acharJogadorMaisProximo(posicao);
 		try {
@@ -171,58 +151,49 @@ public class InteligenciaArtificial {
 			catch(Exception exception){
 				diferencaDeLinhas = diferencaDeColunas = 0;
 			}
-			if(existeAlvoNaDirecao(Direcao.BAIXO,posicao,alvo)) {
-				return Direcao.BAIXO;
-			}
-			else if(existeAlvoNaDirecao(Direcao.CIMA,posicao,alvo)) {
-				return Direcao.CIMA;
-			}
-			else if(existeAlvoNaDirecao(Direcao.DIREITA,posicao,alvo)) {
-				return Direcao.DIREITA;
-			}
-			else if(existeAlvoNaDirecao(Direcao.ESQUERDA,posicao,alvo)) {
-				return Direcao.ESQUERDA;
-			}
-		
 			
-			
+			for(Direcao_Inimigo direcao : Direcao_Inimigo.values()){
+				if(existeAlvoNaDirecao(direcao,posicao,alvo)){
+					return direcao;
+				}
+			}	
 			
 			if(Math.abs(diferencaDeLinhas)>Math.abs(diferencaDeColunas)) {
 				if(diferencaDeLinhas>0) {
-					if(!existeObstaculoNaDirecao(Direcao.BAIXO,posicao,diferencaDeLinhas)) {
-							return Direcao.BAIXO;
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.BAIXO,posicao,diferencaDeLinhas)) {
+							return Direcao_Inimigo.BAIXO;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
-					return Direcao.CIMA;
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
+					return Direcao_Inimigo.CIMA;
 				}
 				
 				if(diferencaDeColunas>0) {
-					if(!existeObstaculoNaDirecao(Direcao.DIREITA,posicao,diferencaDeColunas)){
-							return Direcao.DIREITA;
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.DIREITA,posicao,diferencaDeColunas)){
+							return Direcao_Inimigo.DIREITA;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
-							return Direcao.ESQUERDA;
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
+							return Direcao_Inimigo.ESQUERDA;
 				}				
 			}
 			else {
 				if(diferencaDeColunas>0) {
-					if(!existeObstaculoNaDirecao(Direcao.DIREITA,posicao,diferencaDeColunas)) {
-							return Direcao.DIREITA;
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.DIREITA,posicao,diferencaDeColunas)) {
+							return Direcao_Inimigo.DIREITA;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
-					return Direcao.ESQUERDA;
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
+					return Direcao_Inimigo.ESQUERDA;
 				}
 				
 				if(diferencaDeLinhas>0) {
-					if(!existeObstaculoNaDirecao(Direcao.BAIXO,posicao,diferencaDeLinhas)){
-							return Direcao.BAIXO;
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.BAIXO,posicao,diferencaDeLinhas)){
+							return Direcao_Inimigo.BAIXO;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
-							return Direcao.CIMA;
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
+							return Direcao_Inimigo.CIMA;
 				}
 			}
 			

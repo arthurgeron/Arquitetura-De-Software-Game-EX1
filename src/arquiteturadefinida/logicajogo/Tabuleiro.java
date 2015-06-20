@@ -1,13 +1,46 @@
 package arquiteturadefinida.logicajogo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JFrame;
+
+
 public class Tabuleiro {
 
 	private Elemento[][] matriz;
 	private SaidaJogo saida;
 	private Posicao posicaoDoPortalOculto;
-	private boolean jogadorAtingiuPortal = false;
+	private ScheduledTasks iATasks;
+	private Timer iATimer;
+	private boolean jogadorAtingiuPortal = false, jogadorAindaNaoSeMoveu = true;
+	private List<InteligenciaArtificial> iAs = new ArrayList<InteligenciaArtificial>();
 	public Tabuleiro(Elemento[][] matriz) {
+		int contagemDePersonagens = 0;
 		this.matriz = matriz;
+		iATimer = new Timer();
+
+		for (int i = 0; i < getNumeroLinhas(); i++) {
+			for (int j = 0; j < getNumeroColunas(); j++) {
+				if(elementoEm(new Posicao(i, j)) instanceof Personagem) {
+					contagemDePersonagens++;
+					if(contagemDePersonagens==1){
+						(elementoEm(new Posicao(i, j))).setDirecao(Direcao_TecladoDirecional.DIRECIONAL);
+					}
+					else if (contagemDePersonagens==2){
+						(elementoEm(new Posicao(i, j))).setDirecao(Direcao_TecladoWASD.WASD);
+					}
+					(elementoEm(new Posicao(i, j))).setTabuleiro(this);
+				}
+				else if(elementoEm(new Posicao(i, j)) instanceof Inimigo){
+					iAs.add(new InteligenciaArtificial(this,elementoEm(new Posicao(i, j))));
+				}
+			}
+		}
+		
+		
 	}
 
 	public void setSaida(SaidaJogo saida) {
@@ -26,87 +59,121 @@ public class Tabuleiro {
 	public int getNumeroColunas() {
 		return matriz[0].length;
 	}
+	
+	private void acordarInimigos(){
+		iATasks = new ScheduledTasks();
+		iATimer.schedule(iATasks, 0 , 150);
+	}
 
 	public Elemento elementoEm(Posicao posicao) {
 		try {
-			return posicao.getLinha()  + 1 <= matriz[0].length && posicao.getColuna() + 1 <= matriz.length ? matriz[posicao.getLinha()][posicao.getColuna()] : null;
+			return matriz[posicao.getLinha()][posicao.getColuna()] ;
 		}
 		catch(Exception exception)
 		{
 			return null;
 		}
 	}
-
-	public void fazerMovimento(Direcao d, Elemento entidade) {
-		Posicao posicaoAntiga = acharPosicaoDe(entidade);
-		Posicao posicaoNova;
-		try{
-			posicaoNova = posicaoAntiga.somar(d);
-		}
-		catch(Exception exception) {
-			posicaoNova = posicaoAntiga;
-		}
-		if (posicaoEhInvalida(posicaoNova)) return;
-		Elemento elementoAlcancado = elementoEm(posicaoNova);
-		if(!(entidade.ehInimigo() && (elementoAlcancado.ehObstaculo()))) {
-			alterarElemento(posicaoAntiga, Elemento.GRAMA);
-			switch (elementoAlcancado) {
-			case AGUA:
-				if(quantidadeDeJogadoresRestantes() == 0){
-					alterarElemento(posicaoNova, entidade);
-					if(!jogadorAtingiuPortal){
-						saida.perderJogo();
-					}
-					else {
-						saida.passarDeFase();
-					}
-				}
-				break;
 	
-			case MACA:
-				alterarElemento(posicaoNova, entidade);
-				if (quantidadeMacasRestantes() == 0) reexibirPortal();
-				break;
-	
-			case PORTAL:
-				if(quantidadeDeJogadoresRestantes() == 0){
-					alterarElemento(posicaoNova, entidade);
-					saida.passarDeFase();
+	public void AdicionarKeyListenersAoFrame(JFrame frame){
+		for(int i = 0 ; i < matriz.length ; i++) {
+			for(int j = 0 ; j< matriz[0].length ; j++){
+				if(elementoEm(new Posicao(i,j)).ehJogador()){
+					frame.addKeyListener(elementoEm(new Posicao(i,j)).getListener());
 				}
-				jogadorAtingiuPortal = true;
-				break;
-			default:
-				if(elementoAlcancado.ehInimigo() && !entidade.ehInimigo() && quantidadeDeJogadoresRestantes() == 0) {
-					if(!jogadorAtingiuPortal){
-						saida.perderJogo();
-					}
-					else {
-						saida.passarDeFase();
-					}
-					break;
-				}
-				else if(elementoAlcancado.ehJogador() && entidade.ehInimigo() && quantidadeDeJogadoresRestantes() == 1){
-					if(!jogadorAtingiuPortal){
-						saida.perderJogo();
-					}
-					else {
-						saida.passarDeFase();
-					}
-				}
-				alterarElemento(posicaoNova, entidade);
-				break;
 			}
+		}
+	}
+	
+	public void fazerMovimentoInimigo(Direcao d, Elemento inimigo) {
+		
+		if(!inimigo.ehInimigo()) {
+			return;
+		}
+		
+		Posicao posicaoAntiga = acharPosicaoDe(inimigo);
+		Posicao posicaoNova;
+		
+		posicaoNova = posicaoAntiga.somar(d);
+		
+		if (posicaoEhInvalida(posicaoNova)) return;
+		
+		Elemento elementoAtingido = elementoEm(posicaoNova);
+		
+		if(!(elementoAtingido.ehObstaculo())) {
+			alterarElemento(posicaoAntiga, ElementoEstatico.GRAMA);
+			if(elementoAtingido.ehJogador()) {
+				jogadorMorreu();
+				alterarElemento(posicaoNova, inimigo);
+			}
+			
 		}
 
 	}
+	
+	public void fazerMovimentoPersonagem(Direcao d, Elemento personagem) {
 
+		Posicao posicaoAntiga = acharPosicaoDe(personagem);
+		Posicao posicaoNova;
+		
+		if(jogadorAindaNaoSeMoveu) {
+			acordarInimigos();
+			jogadorAindaNaoSeMoveu = false;
+		}
+		
+		posicaoNova = posicaoAntiga.somar(d);
+		
+		if (posicaoEhInvalida(posicaoNova)) return;
+		
+		Elemento elementoAtingido = elementoEm(posicaoNova);
+		
+		alterarElemento(posicaoAntiga, ElementoEstatico.GRAMA);
+		
+		if(elementoAtingido.equals(ElementoEstatico.AGUA) || elementoAtingido.ehInimigo() ) {
+			jogadorMorreu();
+		}
+		else if(elementoAtingido.equals(ElementoEstatico.PORTAL)) {
+			jogadorAtingiuPortal = true;
+			if(quantidadeDeJogadoresRestantes() == 0){
+				saida.passarDeFase();
+			}
+		}
+		else{
+			alterarElemento(posicaoNova, personagem);
+			if (quantidadeMacasRestantes() == 0) {
+				reexibirPortal();
+			}
+		}
+	
+
+	}
+	
+	private void jogadorMorreu(){
+		if(quantidadeDeJogadoresRestantes() == 0)
+		{
+			iATasks.cancel();//Para a thread
+			if(jogadorAtingiuPortal) {
+				saida.passarDeFase();
+			}
+			else {
+				saida.perderJogo();
+			}
+		}
+	}
+	
+	private void moverInimigos() {
+		for(InteligenciaArtificial IA : iAs) {
+			IA.moverInimigo();
+		}
+	}
+	
 	private void ocultarPortal() {
-		posicaoDoPortalOculto = acharPosicaoDe(Elemento.PORTAL);
-		alterarElemento(posicaoDoPortalOculto, Elemento.GRAMA);
+		posicaoDoPortalOculto = acharPosicaoDe(ElementoEstatico.PORTAL);
+		alterarElemento(posicaoDoPortalOculto, ElementoEstatico.GRAMA);
 	}
 
 	private void reexibirPortal() {
-		alterarElemento(posicaoDoPortalOculto, Elemento.PORTAL);
+		alterarElemento(posicaoDoPortalOculto, ElementoEstatico.PORTAL);
 	}
 
 	private void alterarElemento(Posicao posicao, Elemento e) {
@@ -119,7 +186,7 @@ public class Tabuleiro {
 
 		for (int i = 0; i < matriz.length; i++) {
 			for (int j = 0; j < matriz[i].length; j++) {
-				if (matriz[i][j] == Elemento.MACA) ++ret;
+				if (matriz[i][j] == ElementoEstatico.MACA) ++ret;
 			}
 		}
 
@@ -153,6 +220,14 @@ public class Tabuleiro {
 	public boolean posicaoEhInvalida(Posicao p) {
 		return p.getLinha() < 0 || p.getLinha() >= getNumeroLinhas()
 				|| p.getColuna() < 0 || p.getColuna() >= getNumeroColunas();
+	}
+	
+	public class ScheduledTasks extends TimerTask {
+		 
+			// Add your task here
+		public void run() {
+			moverInimigos(); // Mover inimigos
+		}
 	}
 
 }
