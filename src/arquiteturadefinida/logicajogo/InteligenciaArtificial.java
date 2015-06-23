@@ -23,7 +23,7 @@ public class InteligenciaArtificial {
 		{
 			if(limiteDePassosAtual  >= 0){
 				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()) {
-					if(limiteDePassosInicial / 2 <= limiteDePassosAtual){
+					if(limiteDePassosInicial  >= limiteDePassosAtual*2){
 						return false;
 					}
 					else{
@@ -123,8 +123,8 @@ public class InteligenciaArtificial {
 		 Elemento alvo = null;
 		 int diferencaDeColunas = 0 , diferencaDeLinhas = 0;
 	 
-		for(int i =0; i < tabuleiro.getNumeroColunas() ; i++) {
-			for(int j = 0; j < tabuleiro.getNumeroLinhas() ; j++) {
+		for(int i =0; i < tabuleiro.getNumeroLinhas() ; i++) {
+			for(int j = 0; j < tabuleiro.getNumeroColunas() ; j++) {
 				if(tabuleiro.elementoEm(new Posicao(i,j)) instanceof Personagem) {
 					if(alvo==null) {
 						alvo = tabuleiro.elementoEm(new Posicao(i,j));
