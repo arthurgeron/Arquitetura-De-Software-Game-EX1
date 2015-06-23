@@ -23,7 +23,7 @@ public class Tabuleiro {
 		iATimer = new Timer();
 
 		for (int i = 0; i < getNumeroLinhas(); i++) {
-			for (int j = 0; j < getNumeroColunas(); j++) {
+ 			for (int j = 0; j < getNumeroColunas(); j++) {
 				if(elementoEm(new Posicao(i, j)) instanceof Personagem) {
 					
 					if(elementoEm(new Posicao(i, j)).getDirecao()==null){
@@ -160,6 +160,7 @@ public class Tabuleiro {
 				saida.passarDeFase();
 			}
 			else {
+				iATasks.cancel();
 				saida.perderJogo();
 			}
 		}

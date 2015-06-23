@@ -17,26 +17,33 @@ public class InteligenciaArtificial {
 	}
 	
 	
-		private boolean existeObstaculoNaDirecao(Direcao_Inimigo direcao, Posicao posicaoAtual, int limiteDePassos) {
+		private boolean existeObstaculoNaDirecao(Direcao_Inimigo direcao, Posicao posicaoAtual, int limiteDePassosAtual, int limiteDePassosInicial) {
 
 		if(!tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
 		{
-			if(limiteDePassos  >= 0){
-				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)) .ehObstaculo()) {
-					return true;
+			if(limiteDePassosAtual  >= 0){
+				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()) {
+					if(limiteDePassosInicial / 2 <= limiteDePassosAtual){
+						return false;
+					}
+					else{
+						return true;
+					}
 				}
 				else {
-					return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassos--));
+					return (existeObstaculoNaDirecao(direcao,posicaoAtual.somar(direcao), limiteDePassosAtual--, limiteDePassosInicial));
 				}
 			}
 		}//É necessário verificar se a próxima posição realmente não é um obstáculo
 		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao))!=null){
 			if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
-				return true;
+				if(limiteDePassosInicial / 2 <= limiteDePassosAtual){
+					return false;
+				}
+				else{
+					return true;
+				}
 			}
-		}
-		else{
-			return true;
 		}
 		return false;
 		
@@ -165,39 +172,39 @@ public class InteligenciaArtificial {
 			
 			if(Math.abs(diferencaDeLinhas)>Math.abs(diferencaDeColunas)) {
 				if(diferencaDeLinhas>0) {
-					if(!existeObstaculoNaDirecao(Direcao_Inimigo.BAIXO,posicao,diferencaDeLinhas)) {
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.BAIXO,posicao,diferencaDeLinhas, diferencaDeLinhas)) {
 							return Direcao_Inimigo.BAIXO;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.CIMA,posicao,Math.abs(diferencaDeLinhas), Math.abs(diferencaDeLinhas))) {
 					return Direcao_Inimigo.CIMA;
 				}
 				
 				if(diferencaDeColunas>0) {
-					if(!existeObstaculoNaDirecao(Direcao_Inimigo.DIREITA,posicao,diferencaDeColunas)){
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.DIREITA,posicao,diferencaDeColunas,diferencaDeColunas)){
 							return Direcao_Inimigo.DIREITA;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.ESQUERDA,posicao,Math.abs(diferencaDeColunas), Math.abs(diferencaDeColunas))) {
 							return Direcao_Inimigo.ESQUERDA;
 				}				
 			}
 			else {
 				if(diferencaDeColunas>0) {
-					if(!existeObstaculoNaDirecao(Direcao_Inimigo.DIREITA,posicao,diferencaDeColunas)) {
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.DIREITA,posicao,diferencaDeColunas, diferencaDeColunas)) {
 							return Direcao_Inimigo.DIREITA;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.ESQUERDA,posicao,Math.abs(diferencaDeColunas))) {
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.ESQUERDA,posicao,Math.abs(diferencaDeColunas), Math.abs(diferencaDeColunas))) {
 					return Direcao_Inimigo.ESQUERDA;
 				}
 				
 				if(diferencaDeLinhas>0) {
-					if(!existeObstaculoNaDirecao(Direcao_Inimigo.BAIXO,posicao,diferencaDeLinhas)){
+					if(!existeObstaculoNaDirecao(Direcao_Inimigo.BAIXO,posicao,diferencaDeLinhas, diferencaDeLinhas)){
 							return Direcao_Inimigo.BAIXO;
 					}
 				}
-				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.CIMA,posicao,Math.abs(diferencaDeLinhas))) {
+				else if(!existeObstaculoNaDirecao(Direcao_Inimigo.CIMA,posicao,Math.abs(diferencaDeLinhas), Math.abs(diferencaDeLinhas))) {
 							return Direcao_Inimigo.CIMA;
 				}
 			}
