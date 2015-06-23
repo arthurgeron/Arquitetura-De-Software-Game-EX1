@@ -70,13 +70,9 @@ public class Tabuleiro {
 	}
 
 	public Elemento elementoEm(Posicao posicao) {
-		try {
 			return matriz[posicao.getLinha()][posicao.getColuna()] ;
-		}
-		catch(Exception exception)
-		{
-			return null;
-		}
+		
+
 	}
 	
 	public void AdicionarKeyListenersAoFrame(JFrame frame){

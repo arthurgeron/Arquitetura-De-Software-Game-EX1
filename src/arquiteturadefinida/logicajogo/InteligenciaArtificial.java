@@ -156,13 +156,11 @@ public class InteligenciaArtificial {
 	private Direcao_Inimigo acharCaminho(Posicao posicao) {
 		int diferencaDeLinhas, diferencaDeColunas;
 		Elemento alvo = acharJogadorMaisProximo(posicao);
-			try{
-				diferencaDeLinhas = tabuleiro.acharPosicaoDe(alvo).getLinha() - posicao.getLinha();
-				diferencaDeColunas = tabuleiro.acharPosicaoDe(alvo).getColuna() - posicao.getColuna();
-			}
-			catch(Exception exception){
-				diferencaDeLinhas = diferencaDeColunas = 0;
-			}
+			
+			diferencaDeLinhas = tabuleiro.acharPosicaoDe(alvo).getLinha() - posicao.getLinha();
+			diferencaDeColunas = tabuleiro.acharPosicaoDe(alvo).getColuna() - posicao.getColuna();
+			
+
 			
 			for(Direcao_Inimigo direcao : Direcao_Inimigo.values()){
 				if(existeAlvoNaDirecao(direcao,posicao,alvo)){
