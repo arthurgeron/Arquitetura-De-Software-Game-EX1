@@ -62,4 +62,11 @@ public class Inimigo implements Elemento {
 		
 	}
 
+	@Override
+	public Direcao getDirecao() {
+		return null;
+		// TODO Auto-generated method stub
+		
+	}
+
 }

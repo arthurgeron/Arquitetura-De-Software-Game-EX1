@@ -60,7 +60,8 @@ public class Personagem implements Elemento {
 		return obstaculo;
 	}
 	
-	private Direcao getDirecao(){
+	@Override
+	public Direcao getDirecao(){
 		return direcao;
 	}
 
@@ -121,6 +122,7 @@ public class Personagem implements Elemento {
 		this.direcao = direcao;
 		
 	}
+
 
 
 

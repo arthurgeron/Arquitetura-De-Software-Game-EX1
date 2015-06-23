@@ -3,9 +3,9 @@ package arquiteturadefinida.logicajogo;
 public enum Direcao_TecladoWASD implements Direcao {
 
 	ESQUERDA(37, 0, -1),
-	CIMA(38, -1, 0),
-	DIREITA(39, 0, 1),
-	BAIXO(40, 1, 0),
+	CIMA(65, -1, 0),
+	DIREITA(68, 0, 1),
+	BAIXO(83, 1, 0),
 	WASD(0,0,0),
 	;
 

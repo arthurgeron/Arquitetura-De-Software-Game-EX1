@@ -66,6 +66,13 @@ public enum ElementoEstatico implements Elemento{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Direcao getDirecao() {
+		return null;
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 

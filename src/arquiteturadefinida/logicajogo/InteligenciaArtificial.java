@@ -19,10 +19,10 @@ public class InteligenciaArtificial {
 	
 		private boolean existeObstaculoNaDirecao(Direcao_Inimigo direcao, Posicao posicaoAtual, int limiteDePassos) {
 
-		if(tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
+		if(!tabuleiro.posicaoEhInvalida(posicaoAtual.somar(direcao)))
 		{
 			if(limiteDePassos  >= 0){
-				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)) instanceof ElementoEstatico) {
+				if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)) .ehObstaculo()) {
 					return true;
 				}
 				else {
@@ -30,8 +30,14 @@ public class InteligenciaArtificial {
 				}
 			}
 		}//É necessário verificar se a próxima posição realmente não é um obstáculo
-		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao))instanceof ElementoEstatico)
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao))!=null){
+			if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
+				return true;
+			}
+		}
+		else{
 			return true;
+		}
 		return false;
 		
 		}
@@ -41,13 +47,13 @@ public class InteligenciaArtificial {
 		if(!posicaoNaDirecaoEhValida(posicaoAtual,direcao)) {
 			return false;
 		}
-		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao))instanceof ElementoEstatico){
+		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo()){
 			return false;
 		}
 		else if(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).equals(alvo)) {
 			return true;
 		}
-		else if(!(tabuleiro.elementoEm(posicaoAtual.somar(direcao))instanceof ElementoEstatico)){
+		else if(!(tabuleiro.elementoEm(posicaoAtual.somar(direcao)).ehObstaculo())){
 			return existeAlvoNaDirecao(direcao,posicaoAtual.somar(direcao),alvo);
 		}
 		return false;
@@ -98,8 +104,8 @@ public class InteligenciaArtificial {
 	}
 	
 	private boolean posicaoNaDirecaoEhValida(Posicao posicao, Direcao_Inimigo direcao) {
-		if(!tabuleiro.posicaoEhInvalida(posicao) && !tabuleiro.posicaoEhInvalida(posicao.somar(direcao))){
-			if(!(tabuleiro.elementoEm(posicao.somar(direcao))instanceof ElementoEstatico)) {
+		if(!tabuleiro.posicaoEhInvalida(posicao.somar(direcao))){
+			if(!(tabuleiro.elementoEm(posicao.somar(direcao)).ehObstaculo())) {
 				return true;
 			}
 		}
@@ -143,7 +149,6 @@ public class InteligenciaArtificial {
 	private Direcao_Inimigo acharCaminho(Posicao posicao) {
 		int diferencaDeLinhas, diferencaDeColunas;
 		Elemento alvo = acharJogadorMaisProximo(posicao);
-		try {
 			try{
 				diferencaDeLinhas = tabuleiro.acharPosicaoDe(alvo).getLinha() - posicao.getLinha();
 				diferencaDeColunas = tabuleiro.acharPosicaoDe(alvo).getColuna() - posicao.getColuna();
@@ -200,10 +205,5 @@ public class InteligenciaArtificial {
 
 		
 			return escolherDirecaoAleatoria(posicao);
-		}
-		catch(Exception exception) {
-			System.out.println("1:"+exception.getStackTrace()[0].getLineNumber()+"\n2:"+exception.getStackTrace()[1].getLineNumber()+"\n3:"+exception.getStackTrace()[2].getLineNumber()+"\n4:"+exception.getStackTrace()[3].getLineNumber());
-			return escolherDirecaoAleatoria(posicao);
-		}
 	}
 }

@@ -25,12 +25,16 @@ public class Tabuleiro {
 		for (int i = 0; i < getNumeroLinhas(); i++) {
 			for (int j = 0; j < getNumeroColunas(); j++) {
 				if(elementoEm(new Posicao(i, j)) instanceof Personagem) {
-					contagemDePersonagens++;
-					if(contagemDePersonagens==1){
-						(elementoEm(new Posicao(i, j))).setDirecao(Direcao_TecladoDirecional.DIRECIONAL);
-					}
-					else if (contagemDePersonagens==2){
-						(elementoEm(new Posicao(i, j))).setDirecao(Direcao_TecladoWASD.WASD);
+					
+					if(elementoEm(new Posicao(i, j)).getDirecao()==null){
+						if(contagemDePersonagens==0){
+							(elementoEm(new Posicao(i, j))).setDirecao(Direcao_TecladoDirecional.DIRECIONAL);
+							contagemDePersonagens++;
+						}
+						else if (contagemDePersonagens==1){
+							(elementoEm(new Posicao(i, j))).setDirecao(Direcao_TecladoWASD.WASD);
+							contagemDePersonagens++;
+						}
 					}
 					(elementoEm(new Posicao(i, j))).setTabuleiro(this);
 				}
@@ -87,7 +91,7 @@ public class Tabuleiro {
 	
 	public void fazerMovimentoInimigo(Direcao d, Elemento inimigo) {
 		
-		if(!inimigo.ehInimigo()) {
+		if(!(inimigo instanceof Inimigo)) {
 			return;
 		}
 		
@@ -102,10 +106,10 @@ public class Tabuleiro {
 		
 		if(!(elementoAtingido.ehObstaculo())) {
 			alterarElemento(posicaoAntiga, ElementoEstatico.GRAMA);
-			if(elementoAtingido.ehJogador()) {
+			if(elementoAtingido instanceof Personagem) {
 				jogadorMorreu();
-				alterarElemento(posicaoNova, inimigo);
 			}
+			alterarElemento(posicaoNova, inimigo);
 			
 		}
 

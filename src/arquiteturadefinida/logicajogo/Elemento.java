@@ -22,6 +22,8 @@ public interface Elemento {
 
 	public void setDirecao(Direcao direcao);
 	
+	public Direcao getDirecao();
+	
 	public void setTabuleiro(Tabuleiro tabuleiro);
 	
 }
